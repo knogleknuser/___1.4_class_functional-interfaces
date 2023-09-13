@@ -55,8 +55,37 @@ public class ClassDemo {
         System.out.println(processedWords);
 
         // Terminal methods: forEach, collect, reduce, min, max, count, anyMatch, allMatch, noneMatch, findFirst, findAny
+        words.stream().forEach(System.out::println); // Print each element
+        int totalLengthOfWords = words.stream().map((word) -> word.length()).reduce(0, (subTotal, element) -> subTotal + element); // Calculate total length
+        System.out.println("Total length of words: " + totalLengthOfWords);
+        int countOfWords = (int) words.stream().count(); // Count number of words
+        System.out.println("Number of words: " + countOfWords);
+        Optional<String> firstWord = words.stream().findFirst(); // Find first word
+        System.out.println("First word: " + firstWord.get());
+        Optional<String> anyWord = words.stream().findAny(); // Find any word
+        System.out.println("Any word: " + anyWord.get());
 
         // Collectors API
+       // toMap
+        Map<String, Integer> nameLengthMap = Stream.of("alice", "bob", "charlie")
+                .collect(Collectors.toMap(name -> name, name -> name.length()));
+        System.out.println("Length of each name: "+nameLengthMap);
+        // joining
+        String joinedNames = Stream.of("alice", "bob", "charlie")
+                .collect(Collectors.joining(", "));
+        System.out.println("Joined names: "+joinedNames);
+
+        // groupBy
+        Map<Character, List<String>> groupedNames = Stream.of("Alice", "Bob", "Charlie","Allan")
+                .collect(Collectors.groupingBy(name -> name.charAt(0)));
+        System.out.println("Grouped names: "+groupedNames);
+
+        // Partitioning
+        Map<Boolean, List<Integer>> evenOddPartition = Stream.of(1, 2, 3, 4, 5)
+                .collect(Collectors.partitioningBy(num -> num % 2 == 0));
+        System.out.println("Even and odd numbers: "+evenOddPartition);
+
+        // Custom Collector
         List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
         NumbersPartition partition = numbers.stream()
@@ -64,6 +93,16 @@ public class ClassDemo {
 
         System.out.println("Even numbers: " + partition.evenNumbers);
         System.out.println("Odd numbers: " + partition.oddNumbers);
+
+        int sum = Stream.of(1, 2, 3, 4, 5)
+                .collect(Collectors.summingInt(Integer::intValue)); // 15
+
+        double average = Stream.of(1, 2, 3, 4, 5)
+                .collect(Collectors.averagingInt(Integer::intValue)); // 3.0
+
+        Optional<Integer> max = Stream.of(1, 2, 3, 4, 5)
+                .collect(Collectors.maxBy(Comparator.naturalOrder())); // 5
+        System.out.println("SUM: " + sum + ", AVERAGE: " + average + ", MAX: " + max.get());
     }
 
     private static class NumbersPartition {
@@ -106,4 +145,5 @@ public class ClassDemo {
             return EnumSet.noneOf(Characteristics.class);
         }
     }
+
 }
