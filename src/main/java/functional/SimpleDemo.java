@@ -2,9 +2,7 @@ package functional;
 
 public class SimpleDemo {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-        SimpleDemo demo = new SimpleDemo();
-        demo.run();
+        new SimpleDemo().run();
     }
     public void run(){
         // ex1
@@ -46,15 +44,7 @@ public class SimpleDemo {
             }
         }
     }
-    private interface Filter {
-        boolean accept(String name);
-    }
-    private class FilterByMinLength5 implements Filter {
-        @Override
-        public boolean accept(String name) {
-            return name.length() >= 5;
-        }
-    }
+
     private String[] filter(String[] names, Filter filter) {
         String[] result = new String[names.length];
         int index = 0;
@@ -64,5 +54,15 @@ public class SimpleDemo {
             }
         }
         return result;
+    }
+    
+    private interface Filter {
+        boolean accept(String name);
+    }
+    private class FilterByMinLength5 implements Filter {
+        @Override
+        public boolean accept(String name) {
+            return name.length() >= 5;
+        }
     }
 }
