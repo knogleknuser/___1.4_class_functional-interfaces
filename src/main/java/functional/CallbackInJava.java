@@ -3,55 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package callbackinjava;
+package functional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author Thomas Hartmann - tha@cphbusiness.dk
+ * Purpose: Show how to use functional interfaces and lambda expressions in Java
+ * @author Thomas Hartmann
  */
 public class CallbackInJava {
 
-    /**
-     * @param args the command line arguments
-     */
-    
-    //In javascript we hava callbacks like: array.filter(function(){...})
-    //In java an equivilent would be (not using lambda) to use an object
-    public static void main(String[] args) {
-        String[] strs = {"Andy", "Beatrice", "Charles", "Dorthea", "Eric", "Beatles"};
-        Filter minLength5 = new FilterByMinLength5();
-        String[] result1 = filter(strs, minLength5);
-        for (String string : result1) {
-            System.out.println(string);
-        }
-        System.out.println("----------------------------- Now filter on words starting with 'Bea'-------------------------");
-        //Here we use the Interface to create an anonymous object directly inside the filter method.
-        String[] result2 = filter(strs, new Filter(){
-            @Override
-            public boolean validate(String element) {
-                //return element.startsWith("Bea");
-                return myValidate(element);
-            }
-        });
-        for (String string : result2) {
-            System.out.println(string);
-        }
-        System.out.println("-------------------------------Now filter on words containing 'a'------------------------------");
-        //Here we use Lambda expression
-        int[] ints = {1, 2, 3, 4, 5};
-        String[] result3 = filter(strs, (element)-> element.contains("a"));
-        for (String string : result3) {
-            System.out.println(string);
-        }
+    // Functional interface with a single method
+    private static interface Filter{
+        boolean validate(String element);
     }
-    private static boolean myValidate(String str){
-        return str.endsWith("les");
-    }
-    
-    // filter method here uses a functional interface (interface with only one method). It can then be used with lambda expressions
+    // filter method here uses a functional interface
     private static String[] filter(String[] strs, Filter filterObj){
         List<String> filtered = new ArrayList();
         for (String str : strs) {
@@ -61,7 +28,41 @@ public class CallbackInJava {
         }
         return filtered.toArray(new String[0]);
     }
-    
+    //In javascript we hava callbacks like: array.filter(function(){...})
+    //In java an equivilent would be (not using lambda) to use an object
+    public static void main(String[] args) {
+
+        String[] strs = {"Andy", "Beatrice", "Charles", "Dorthea", "Eric", "Beatles"};
+
+        System.out.println("--------------------- Demo 1: Parameter to filter() is an object of type: Filter ------------------");
+        // Here we use a class that implements the interface Filter and pass it to the filter method
+        Filter minLength5 = new FilterByMinLength5(); //FilterByMinLength5 is implemented as an inner class below
+        String[] result1 = filter(strs, minLength5);
+
+        for (String string : result1) {
+            System.out.println(string);
+        }
+
+        System.out.println("----------------------------- Demo2: Parameter is anonymous class implementation of Filter interface -------------------------");
+        String[] result2 = filter(strs, new Filter(){
+            @Override
+            public boolean validate(String element) {
+                //return element.startsWith("Bea");
+                return element.endsWith("les");
+            }
+        });
+
+        for (String string : result2) {
+            System.out.println(string);
+        }
+
+        System.out.println("------------------------------- Demo 3: Parameter is Lambda expression ------------------------------");
+        String[] result3 = filter(strs, (element)-> element.contains("a")); // Lambda
+        for (String string : result3) {
+            System.out.println(string);
+        }
+    }
+
   //----------------------------------------------------------------------------------------------  
     
     
@@ -72,7 +73,5 @@ public class CallbackInJava {
         }
     }
     //Functional interface:
-    private static interface Filter{
-        boolean validate(String element);
-    }
+
 }
