@@ -33,4 +33,9 @@ public class DeclarativeStyle {
                 .forEach(System.out::println);
     }
 
+    public static void main(String[] args) {
+        DeclarativeStyle ds = new DeclarativeStyle();
+        ds.imperativeStyle();
+        ds.declarativeStyle();
+    }
 }
