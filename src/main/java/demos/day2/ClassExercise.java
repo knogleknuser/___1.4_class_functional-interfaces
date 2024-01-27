@@ -1,5 +1,7 @@
 package demos.day2;
 
+import lombok.*;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.stream.Collectors;
 public class ClassExercise {
     public static void main(String[] args) {
         ClassExercise ce = new ClassExercise();
+
+        // streams and lambdas
         List<Book> books = ce.createBooks(20);
         System.out.println(books);
 
@@ -37,6 +41,50 @@ public class ClassExercise {
         int totalPages = books.stream().map(Book::getNumberOfPages).reduce(0, (subTotal, element) -> subTotal + element);
         System.out.println("Total pages: " + totalPages);
 
+        // Collectors API
+        List<Transaction> transactions = List.of(
+                new Transaction(1, 100.0, "USD"),
+                new Transaction(2, 150.0, "EUR"),
+                new Transaction(3, 400.0, "USD"),
+                new Transaction(4, 75.0, "GBP"),
+                new Transaction(5, 120.0, "EUR"),
+                new Transaction(6, 300.0, "GBP")
+        );
+
+        // Calculate the total sum of all transaction amounts
+        double totalSum = transactions.stream()
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+        System.out.println("Total sum of all transactions: " + totalSum);
+
+        // Group transactions by currency and calculate sum for each currency
+        Map<String,Double> map = transactions
+                .stream()
+                .collect(Collectors
+                        .groupingBy(
+                                Transaction::getCurrency,
+                                Collectors.summingDouble(Transaction::getAmount)
+                        )
+                );
+        System.out.println("Sum of transactions by currency: " + map);
+
+        // Find the highest transaction amount
+        double highestTransactionAmount = transactions
+                .stream()
+                .mapToDouble(Transaction::getAmount)
+                .max()
+                .getAsDouble();
+        System.out.println("Highest transaction amount: " + highestTransactionAmount);
+
+        // Find the average transaction amount
+        double averageTransactionAmount = transactions
+                .stream()
+                .mapToDouble(Transaction::getAmount)
+                .average()
+                .getAsDouble();
+        System.out.println("Average transaction amount: " + averageTransactionAmount);
+
+
         // GENERICS
         // ex1: Create a generic class that can store any type of data
         Demo demo = new Demo("John", 20);
@@ -49,6 +97,7 @@ public class ClassExercise {
         String fileName = fileStorage.store(demo);
         System.out.println("From FileStorage: "+fileStorage.retrieve(fileName));
     }
+    // streams and lambdas
     public List<Book> createBooks(int numberOfBooks) {
         List<String> authors = List.of("J.K. Rowling", "J.R.R. Tolkien", "George R.R. Martin", "Stephen King", "Dan Brown", "Agatha Christie", "Terry Pratchett", "J.D. Salinger", "James Patterson", "Douglas Adams", "Roald Dahl", "Johanna Spyri");
         List<String> titles = List.of("Harry Potter and the Philosopher's Stone", "Harry Potter and the Chamber of Secrets", "Harry Potter and the Prisoner of Azkaban", "Harry Potter and the Goblet of Fire", "Harry Potter and the Order of the Phoenix", "Harry Potter and the Half-Blood Prince", "Harry Potter and the Deathly Hallows", "The Hobbit", "The Fellowship of the Ring");
@@ -68,11 +117,24 @@ public class ClassExercise {
         return books;
     }
 
-    static interface DataStorage<T> {
+    // Collectors API
+    @Setter
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    private static class Transaction{
+        private int id;
+        private double amount;
+        private String currency;
+    }
+    // GENERICS
+    static interface DataStorage<T extends Serializable> {
         String store(T data);
         T retrieve(String source);
     }
-    static class MemoryStorage<T> implements DataStorage<T> {
+    static class MemoryStorage<T extends Serializable> implements DataStorage<T> { // Bounded type parameter T extends Serializable (That is the syntax even though Serializable is an interface)
         private T data;
         @Override
         public String store(T data) {
@@ -84,7 +146,7 @@ public class ClassExercise {
             return data;
         }
     }
-    static class FileStorage<T> implements DataStorage<T> {
+    static class FileStorage<T extends Serializable> implements DataStorage<T> {
         // T must be serializable!
         WriterReader<T> writerReader = new WriterReader<>();
         @Override

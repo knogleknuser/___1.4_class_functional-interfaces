@@ -4,7 +4,7 @@ import java.io.*;
 import java.lang.reflect.Type;
 
 // Show how to Serialize an object and write it to a file
-public class WriterReader<T> {
+public class WriterReader<T extends Serializable> {
     public static void main(String[] args) {
         Book book = Book.builder()
                 .title("The Lord of the Rings")
